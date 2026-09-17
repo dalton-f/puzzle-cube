@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://btgqq82una2ff"]
 
-[ext_resource type="Texture2D" uid="uid://msdg48lw048f" path="res://mixed_bag_bits/kaykit_texture_A.png" id="1_dn60d"]
+[ext_resource type="Texture2D" uid="uid://msdg48lw048f" path="res://assets/textures/mixed_bag_bits/kaykit_texture_A.png" id="1_dn60d"]
 
 [resource]
 resource_name = "KayKit_Texture_A"
