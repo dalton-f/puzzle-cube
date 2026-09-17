@@ -56,6 +56,8 @@ var moves = {
 
 var rng := RandomNumberGenerator.new()
 
+var animation_speed: float = 0.5
+
 var is_rotating: bool = false
 
 func _ready() -> void:
@@ -75,6 +77,12 @@ func _input(event: InputEvent) -> void:
 				degrees *= -1
 			
 			_rotate_layer(layer, axis, degrees)
+
+	if event.is_action_pressed("rotate_clockwise"):
+		_rotate_cube(true)
+		
+	if event.is_action_pressed("rotate_counterclockwise"):
+		_rotate_cube(false)
 
 # Finds and returns all MeshInstance3D nodes whose positions match
 # the positions specified in the given layer.
@@ -132,7 +140,7 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 			pivot_node.rotate_object_local(axis, angle),
 		0.0,
 		deg_to_rad(degrees),
-		0.5
+		animation_speed
 	)
 
 	await tween.finished
@@ -178,3 +186,20 @@ func _scramble_cube(sequence_length: int) -> void:
 	
 		previous_move = move
 		previous_direction = direction
+
+func _rotate_cube(clockwise: bool) -> void:
+	if is_rotating:
+		return
+
+	is_rotating = true
+
+	var degrees := 90.0 if clockwise else -90.0
+	var target_rotation := rotation
+	target_rotation.y += deg_to_rad(degrees)
+
+	var tween := create_tween()
+	tween.tween_property(self, "rotation", target_rotation, animation_speed)
+
+	await tween.finished
+
+	is_rotating = false
