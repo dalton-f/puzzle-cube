@@ -99,6 +99,8 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		func(angle): 
 			# Reset the rotation each time 
 			# and then you rotate it a partial amount of the rotation again
+			# the rendered frame only cares where it ends, so it shows the smooth rotation
+			# and NOT the snapping back to prevent over-rotation from accumulating angles
 			pivot_node.rotation = start_rotation
 			pivot_node.rotate_object_local(axis, angle),
 		0.0,
@@ -120,11 +122,20 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 
 # Scrambles the puzzle cube out of the completed state
 func _scramble_cube(sequence_length: int) -> void:
+	var previous_move: int = -1
+	var previous_direction: int = 0
+	
 	for i in sequence_length: 
-		var move: int = rng.randi_range(0, 5) 
-			
-		# Randomly choose clockwise or counter-clockwise. 
-		var direction: int = 1 if rng.randi_range(0, 1) == 0 else -1 
+		var move: int
+		var direction: int
+
+		while true:
+			move = rng.randi_range(0, 5)
+			direction = 1 if rng.randi_range(0, 1) == 0 else -1
+
+			# Don't immediately undo the previous move.
+			if move != previous_move or direction != -previous_direction:
+				break
 			
 		match move: 
 			0: await _rotate_layer(front_layer, Vector3.RIGHT, 90 * direction) 
@@ -133,3 +144,6 @@ func _scramble_cube(sequence_length: int) -> void:
 			3: await _rotate_layer(right_layer, Vector3.BACK, -90 * direction) 
 			4: await _rotate_layer(top_layer, Vector3.DOWN, 90 * direction)
 			5: await _rotate_layer(bottom_layer, Vector3.DOWN, -90 * direction)
+	
+		previous_move = move
+		previous_direction = direction
