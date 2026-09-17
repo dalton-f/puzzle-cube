@@ -91,8 +91,23 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		node.reparent(pivot_node)
 	
 	# Rotate the pivot and all of its children around the given axis.
-	pivot_node.rotate_object_local(axis, deg_to_rad(degrees))
+	var tween: Tween = create_tween()
 	
+	var start_rotation := pivot_node.rotation
+	
+	tween.tween_method(
+		func(angle): 
+			# Reset the rotation each time 
+			# and then you rotate it a partial amount of the rotation again
+			pivot_node.rotation = start_rotation
+			pivot_node.rotate_object_local(axis, angle),
+		0.0,
+		deg_to_rad(degrees),
+		0.5
+	)
+
+	await tween.finished
+
 	for node in nodes:
 		# Orthonormalize the transforms to avoid precision errors
 		node.transform = node.transform.orthonormalized()
@@ -103,6 +118,7 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		# Reparent back to the root of the PuzzleCube
 		node.reparent(original_owner_node)
 
+# Scrambles the puzzle cube out of the completed state
 func _scramble_cube(sequence_length: int) -> void:
 	for i in sequence_length: 
 		var move: int = rng.randi_range(0, 5) 
@@ -111,9 +127,9 @@ func _scramble_cube(sequence_length: int) -> void:
 		var direction: int = 1 if rng.randi_range(0, 1) == 0 else -1 
 			
 		match move: 
-			0: _rotate_layer(front_layer, Vector3.RIGHT, 90 * direction) 
-			1: _rotate_layer(back_layer, Vector3.RIGHT, -90 * direction) 
-			2: _rotate_layer(left_layer, Vector3.BACK, 90 * direction) 
-			3: _rotate_layer(right_layer, Vector3.BACK, -90 * direction) 
-			4: _rotate_layer(top_layer, Vector3.DOWN, 90 * direction)
-			5: _rotate_layer(bottom_layer, Vector3.DOWN, -90 * direction)
+			0: await _rotate_layer(front_layer, Vector3.RIGHT, 90 * direction) 
+			1: await _rotate_layer(back_layer, Vector3.RIGHT, -90 * direction) 
+			2: await _rotate_layer(left_layer, Vector3.BACK, 90 * direction) 
+			3: await _rotate_layer(right_layer, Vector3.BACK, -90 * direction) 
+			4: await _rotate_layer(top_layer, Vector3.DOWN, 90 * direction)
+			5: await _rotate_layer(bottom_layer, Vector3.DOWN, -90 * direction)
