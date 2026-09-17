@@ -1,6 +1,8 @@
 class_name PuzzleCube
 extends MeshInstance3D
 
+@export var scramble_length: int = 20
+
 # F = Vector3.RIGHT, 90 degrees
 var front_layer: Array[Vector3] = [
 	Vector3(-1.0, 1.0, -1.0), Vector3(-1.0, 1.0, 0.0), Vector3(-1.0, 1.0, 1.0),
@@ -42,6 +44,15 @@ var bottom_layer: Array[Vector3] = [
 	Vector3(0.0, -1.0, -1.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, -1.0, 1.0),
 	Vector3(1.0, -1.0, -1.0), Vector3(1.0, -1.0, 0.0), Vector3(1.0, -1.0, 1.0)
 ]
+
+var moves = []
+
+var rng := RandomNumberGenerator.new()
+
+func _ready() -> void:
+	rng.randomize()
+	
+	_scramble_cube(scramble_length)
 
 # Finds and returns all MeshInstance3D nodes whose positions match
 # the positions specified in the given layer.
@@ -91,3 +102,18 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		
 		# Reparent back to the root of the PuzzleCube
 		node.reparent(original_owner_node)
+
+func _scramble_cube(sequence_length: int) -> void:
+	for i in sequence_length: 
+		var move: int = rng.randi_range(0, 5) 
+			
+		# Randomly choose clockwise or counter-clockwise. 
+		var direction: int = 1 if rng.randi_range(0, 1) == 0 else -1 
+			
+		match move: 
+			0: _rotate_layer(front_layer, Vector3.RIGHT, 90 * direction) 
+			1: _rotate_layer(back_layer, Vector3.RIGHT, -90 * direction) 
+			2: _rotate_layer(left_layer, Vector3.BACK, 90 * direction) 
+			3: _rotate_layer(right_layer, Vector3.BACK, -90 * direction) 
+			4: _rotate_layer(top_layer, Vector3.DOWN, 90 * direction)
+			5: _rotate_layer(bottom_layer, Vector3.DOWN, -90 * direction)
