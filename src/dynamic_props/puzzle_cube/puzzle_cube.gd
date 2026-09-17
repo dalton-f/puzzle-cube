@@ -154,6 +154,8 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		
 		# Reparent back to the root of the PuzzleCube
 		node.reparent(original_owner_node)
+		
+		_snap_cube_position(node)
 	
 	is_rotating = false
 
@@ -201,5 +203,14 @@ func _rotate_cube(clockwise: bool) -> void:
 	tween.tween_property(self, "rotation", target_rotation, animation_speed)
 
 	await tween.finished
+	
+	transform = transform.orthonormalized()
 
 	is_rotating = false
+
+func _snap_cube_position(node: Node3D) -> void:
+	node.position = Vector3(
+		round(node.position.x),
+		round(node.position.y),
+		round(node.position.z)
+	)
