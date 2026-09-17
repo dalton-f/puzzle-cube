@@ -45,14 +45,34 @@ var bottom_layer: Array[Vector3] = [
 	Vector3(1.0, -1.0, -1.0), Vector3(1.0, -1.0, 0.0), Vector3(1.0, -1.0, 1.0)
 ]
 
-var moves = []
+var moves = {
+	"front": [front_layer, Vector3.RIGHT, 90],
+	"back": [back_layer, Vector3.RIGHT, -90],
+	"left": [left_layer, Vector3.BACK, 90],
+	"right": [right_layer, Vector3.BACK, -90],
+	"up": [top_layer, Vector3.DOWN, 90],
+	"down": [bottom_layer, Vector3.DOWN, -90]
+}
 
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
-	rng.randomize()
-	
 	_scramble_cube(scramble_length)
+
+func _input(event: InputEvent) -> void:
+	for action in moves:
+		if event.is_action_pressed(action):
+			var move = moves[action]
+
+			var layer = move[0]
+			var axis = move[1]
+			var degrees = move[2]
+			
+			# Let's us handle counterclockwise moves without any more effort
+			if Input.is_key_pressed(KEY_SHIFT):
+				degrees *= -1
+			
+			_rotate_layer(layer, axis, degrees)
 
 # Finds and returns all MeshInstance3D nodes whose positions match
 # the positions specified in the given layer.
@@ -122,6 +142,8 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 
 # Scrambles the puzzle cube out of the completed state
 func _scramble_cube(sequence_length: int) -> void:
+	rng.randomize()
+		
 	var previous_move: int = -1
 	var previous_direction: int = 0
 	
