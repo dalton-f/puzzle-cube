@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://dpfwh2ykvbe2q"]
 
 [ext_resource type="Material" uid="uid://btgqq82una2ff" path="res://assets/materials/mixed_bag_bits/kay_kit_texture_a.tres" id="1_b3aqr"]
+[ext_resource type="Script" uid="uid://bgodntkuknrd0" path="res://src/dynamic_props/puzzle_cube/puzzle_cube.gd" id="2_e4wig"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_85an7"]
 _surfaces = [{
@@ -922,6 +923,7 @@ shadow_mesh = SubResource("ArrayMesh_lj2d6")
 
 [node name="PuzzleCube" type="MeshInstance3D" unique_id=1535471288]
 mesh = SubResource("ArrayMesh_u7poy")
+script = ExtResource("2_e4wig")
 
 [node name="PuzzleCubeA" type="MeshInstance3D" parent="." unique_id=1122963954]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.99999994, -1, -1)
