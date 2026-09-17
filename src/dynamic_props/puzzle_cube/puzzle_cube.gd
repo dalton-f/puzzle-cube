@@ -16,3 +16,18 @@ func _get_nodes_by_layer(layer: Array[Vector3]) -> Array[MeshInstance3D]:
 				nodes.append(node)
 				
 	return nodes
+
+func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
+	var nodes: Array[MeshInstance3D] = _get_nodes_by_layer(layer)
+	
+	@warning_ignore("integer_division")
+	var center_index: int = floor(nodes.size() / 2)
+	var pivot_node: MeshInstance3D = nodes[center_index]
+	
+	for node in nodes:
+		if node == pivot_node: 
+			continue
+		
+		node.reparent(pivot_node)
+	
+	pivot_node.rotate_object_local(axis, deg_to_rad(degrees))
