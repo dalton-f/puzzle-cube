@@ -13,7 +13,7 @@ config_version=5
 config/name="puzzle-cube"
 run/main_scene="uid://dgop02wcdvnff"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://c45vnw2w8vbh3"
 
 [display]
 
