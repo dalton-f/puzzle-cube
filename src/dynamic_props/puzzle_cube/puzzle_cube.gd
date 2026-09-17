@@ -56,6 +56,8 @@ var moves = {
 
 var rng := RandomNumberGenerator.new()
 
+var is_rotating: bool = false
+
 func _ready() -> void:
 	_scramble_cube(scramble_length)
 
@@ -90,6 +92,11 @@ func _get_nodes_by_layer(layer: Array[Vector3]) -> Array[MeshInstance3D]:
 
 # Rotates all nodes belonging to a layer around the layer's centre.
 func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
+	if is_rotating:
+		return
+	
+	is_rotating = true
+	
 	# Get the actual nodes corresponding to the positions in the layer.
 	var nodes: Array[MeshInstance3D] = _get_nodes_by_layer(layer)
 	
@@ -139,6 +146,8 @@ func _rotate_layer(layer: Array[Vector3], axis: Vector3, degrees: int) -> void:
 		
 		# Reparent back to the root of the PuzzleCube
 		node.reparent(original_owner_node)
+	
+	is_rotating = false
 
 # Scrambles the puzzle cube out of the completed state
 func _scramble_cube(sequence_length: int) -> void:
